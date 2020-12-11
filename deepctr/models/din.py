@@ -39,18 +39,18 @@ def DIN(dnn_feature_columns, history_feature_list, dnn_use_bn=False,
 
     """
 
-    features = build_input_features(dnn_feature_columns)
+    features = build_input_features(dnn_feature_columns)#字典，字典里是所有特征的Input信息
 
-    sparse_feature_columns = list(
+    sparse_feature_columns = list(#获取稀疏特征对象
         filter(lambda x: isinstance(x, SparseFeat), dnn_feature_columns)) if dnn_feature_columns else []
-    dense_feature_columns = list(
+    dense_feature_columns = list(#获取稠密特征对象
         filter(lambda x: isinstance(x, DenseFeat), dnn_feature_columns)) if dnn_feature_columns else []
-    varlen_sparse_feature_columns = list(
+    varlen_sparse_feature_columns = list(#获取序列特征对象
         filter(lambda x: isinstance(x, VarLenSparseFeat), dnn_feature_columns)) if dnn_feature_columns else []
 
-    history_feature_columns = []
-    sparse_varlen_feature_columns = []
-    history_fc_names = list(map(lambda x: "hist_" + x, history_feature_list))
+    history_feature_columns = []#history_feature_list中包含的特征
+    sparse_varlen_feature_columns = []#history_feature_list中不包含的特征
+    history_fc_names = list(map(lambda x: "hist_" + x, history_feature_list))#获取序列特征名称
     for fc in varlen_sparse_feature_columns:
         feature_name = fc.name
         if feature_name in history_fc_names:
@@ -59,7 +59,7 @@ def DIN(dnn_feature_columns, history_feature_list, dnn_use_bn=False,
             sparse_varlen_feature_columns.append(fc)
 
     inputs_list = list(features.values())
-
+    #对离散特征生成embedding矩阵
     embedding_dict = create_embedding_matrix(dnn_feature_columns, l2_reg_embedding, seed, prefix="")
 
     query_emb_list = embedding_lookup(embedding_dict, features, sparse_feature_columns, history_feature_list,
