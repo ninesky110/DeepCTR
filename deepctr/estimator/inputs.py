@@ -62,6 +62,25 @@ def embedding_lookup(sparse_embedding_dict, sparse_input_dict, sparse_feature_co
         return list(chain.from_iterable(group_embedding_dict.values()))
     return group_embedding_dict
 
+def my_embedding_lookup(sparse_embedding_dict, sparse_input_dict, sparse_feature_columns, return_feat_list=(),
+                     mask_feat_list=()):
+    embedding_dict = defaultdict()
+    for fc in sparse_feature_columns:
+        feature_name = fc.name
+        embedding_name = fc.embedding_name
+        if (len(return_feat_list) == 0 or feature_name in return_feat_list):
+            if fc.use_hash:
+                lookup_idx = Hash(fc.vocabulary_size, mask_zero=(feature_name in mask_feat_list))(
+                    sparse_input_dict[feature_name])
+            else:
+                lookup_idx = sparse_input_dict[feature_name]
+
+            embedding_dict[embedding_name]=sparse_embedding_dict[embedding_name](lookup_idx)
+
+    return embedding_dict
+
+
+
 
 def get_dense_input(features, feature_columns):
     from . import feature_column as fc_lib
