@@ -11,3 +11,4 @@ from .pnn import PNNEstimator
 from .wdl import WDLEstimator
 from .xdeepfm import xDeepFMEstimator
 from .din import DinEstimator
+from .din_my import my_DinEstimator
